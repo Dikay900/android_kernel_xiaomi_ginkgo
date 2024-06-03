@@ -11,8 +11,8 @@
 # Use this script on root of kernel directory
 
 SECONDS=0 # builtin bash timer
-ZIPNAME="RyzenKernel-AOSP-Ginkgo-$(TZ=Asia/Jakarta date +"%Y%m%d-%H%M").zip"
-ZIPNAME_KSU="RyzenKernel-AOSP-Ginkgo-KSU-$(TZ=Asia/Jakarta date +"%Y%m%d-%H%M").zip"
+ZIPNAME="RyzenKernel-AOSP-A11-Ginkgo-$(TZ=Asia/Jakarta date +"%Y%m%d-%H%M").zip"
+ZIPNAME_KSU="RyzenKernel-AOSP-A11-Ginkgo-KSU-$(TZ=Asia/Jakarta date +"%Y%m%d-%H%M").zip"
 TC_DIR="/workspace/toolchain/linux-x86"
 CLANG_DIR="/workspace/toolchain/linux-x86/clang-r498229b"
 GCC_64_DIR="/workspace/toolchain/aarch64-linux-android-4.9"
@@ -49,10 +49,8 @@ echo "Cloning failed! Aborting..."
 exit 1
 fi
 fi
-
-echo -e "\nCleanup Kernel Source first for Android 12-14\n"
+echo -e "\nBuild Kernel Source for Android 11\n"
 git restore arch/arm64/configs/vendor/ginkgo-perf_defconfig
-rm -rf out
 
 if [[ $1 = "-k" || $1 = "--ksu" ]]; then
 	echo -e "\nCleanup KernelSU first on local build\n"
@@ -65,10 +63,10 @@ fi
 curl -kLSs "https://raw.githubusercontent.com/kutemeikito/KernelSU/main/kernel/setup.sh" | bash -s main
 if [[ $1 = "-k" || $1 = "--ksu" ]]; then
 echo -e "\nKSU Support, let's Make it On\n"
-sed -i 's/CONFIG_KSU=y/CONFIG_LOCALVERSION="-RyzenKernel-KSU"/g' arch/arm64/configs/vendor/ginkgo-perf_defconfig
+sed -i 's/CONFIG_KSU=y/CONFIG_LOCALVERSION="-RyzenKernel-KSU"/#CONFIG_MSM_CAMERA_BOOTCLOCK_TIMESTAMP is not set/g' arch/arm64/configs/vendor/ginkgo-perf_defconfig
 else
 echo -e "\nKSU not Support, let's Make it off\n"
-sed -i 's/# CONFIG_KSU=is not set/CONFIG_LOCALVERSION="-RyzenKernel"/g' arch/arm64/configs/vendor/ginkgo-perf_defconfig
+sed -i 's/# CONFIG_KSU=is not set/CONFIG_LOCALVERSION="-RyzenKernel"/#CONFIG_MSM_CAMERA_BOOTCLOCK_TIMESTAMP is not set/g' arch/arm64/configs/vendor/ginkgo-perf_defconfig
 fi
 
 mkdir -p out
